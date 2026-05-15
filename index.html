@@ -19,7 +19,7 @@
 
   /* ── HEADER ── */
   .header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;position:sticky;top:0;z-index:100;}
-  .header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:32px;height:72px;}
+  .header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:32px;height:68px;padding-top:4px;}
   .logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--accent);white-space:nowrap;letter-spacing:-.5px;}
   .logo span{color:var(--text-soft);font-weight:400;}
   .nav{display:flex;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none;}
@@ -52,20 +52,8 @@
 
   /* ── MOBILE TOOLBAR ── */
   .mobile-toolbar{
-    display:none;
-    position:fixed;
-    top:56px;left:0;right:0;
-    background:var(--surface);
-    border-bottom:1px solid var(--border);
-    padding:8px 12px;
-    gap:8px;
-    align-items:center;
-    z-index:99;
-    flex-wrap:nowrap;
-    overflow-x:auto;
-    scrollbar-width:none;
+    display:none; /* only on mobile, in header */
   }
-  .mobile-toolbar::-webkit-scrollbar{display:none;}
   .mobile-user{
     flex-shrink:0;
     display:flex;
@@ -85,7 +73,17 @@
   /* ── MOBILE (≤600px) ── */
 
   @media(max-width:600px){
-    .mobile-toolbar{display:flex;}
+    .mobile-toolbar{
+      display:flex;
+      flex-direction:row;
+      align-items:center;
+      gap:4px;
+      margin-left:auto;
+      padding:0;
+      border:none;
+      background:transparent;
+      position:static;
+    }
     /* Header: logo + hamburger-style nav */
     .header-inner{height:60px;gap:12px;}
     .logo-wrap{gap:8px;}
@@ -93,7 +91,7 @@
     .logo-img{width:28px!important;height:28px!important;overflow:visible!important;}
 
     /* Nav: scrollable pill row at bottom */
-    .header{padding:4px 0 0 0;position:sticky;top:0;z-index:100;}
+    .header{padding:6px 0 0 0;position:sticky;top:0;z-index:100;}
     .nav{
       display:none; /* hidden in header, shown in bottom bar */
     }
@@ -134,16 +132,17 @@
     }
     .bottom-nav-btn .bn-icon{font-size:18px;}
 
-    /* Main content: add padding for bottom nav + toolbar */
+    /* Main content: add padding for bottom nav */
     .main{
       padding:12px 12px 90px 12px;
-      padding-top:60px;
     }
 
     /* Header on mobile: just logo + sync dot */
     .header-inner{
       justify-content:space-between;
-      padding:0 14px;
+      padding:4px 12px 0 12px;
+      flex-wrap:nowrap;
+      gap:8px;
     }
     .nav{display:none!important;}
 
@@ -344,7 +343,7 @@
 .login-toggle{text-align:center;margin-top:14px;font-size:13px;color:var(--text-muted);}
 .login-toggle a{color:var(--accent);cursor:pointer;text-decoration:underline;}
 .login-err{background:rgba(224,92,92,.1);border:1px solid var(--danger);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--danger);margin-bottom:12px;display:none;}
-.user-badge{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:12px;color:var(--text-soft);}
+.user-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:12px;color:var(--text-soft);white-space:nowrap;}
 .user-badge:hover{border-color:var(--accent);}
 .user-dot{width:7px;height:7px;background:var(--success);border-radius:50%;flex-shrink:0;}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--text-muted);display:inline-block;transition:background .3s;flex-shrink:0;}
@@ -404,14 +403,11 @@
 
 <!-- Mobile toolbar (user, projects, PDF) -->
 <div class="mobile-toolbar" id="mobile-toolbar">
-  <div class="mobile-user" id="mobile-user-badge" onclick="firebase.auth().signOut()" style="display:none">
-    <span style="width:6px;height:6px;background:var(--success);border-radius:50%;display:inline-block;flex-shrink:0"></span>
-    <span id="mobile-user-email">–</span>
-    <span style="color:var(--text-muted);font-size:10px">· Abmelden</span>
+  <div class="mobile-user" id="mobile-user-badge" onclick="firebase.auth().signOut()" style="display:none" title="Abmelden">
+    <span id="mobile-user-email">🚪</span>
   </div>
-  <button class="btn btn-secondary btn-sm" onclick="openProjects()" style="white-space:nowrap;flex-shrink:0;font-size:11px;padding:5px 10px">📁 Projekte</button>
-  <button class="btn btn-secondary btn-sm" onclick="exportPDF()" style="white-space:nowrap;flex-shrink:0;font-size:11px;padding:5px 10px">📄 PDF</button>
-  <span class="sync-dot" id="sync-dot-mobile" style="flex-shrink:0;margin-left:4px"></span>
+  <button class="btn btn-secondary btn-sm" onclick="openProjects()" style="padding:5px 10px;font-size:16px" title="Projekte">📁</button>
+  <button class="btn btn-secondary btn-sm" onclick="exportPDF()" style="padding:5px 10px;font-size:16px" title="PDF Export">📄</button>
 </div>
 <!-- App (versteckt bis Login) -->
 <div id="app-root" style="display:none">
@@ -435,7 +431,7 @@
         <span>✅</span> Checklisten
       </button>
     </nav>
-    <div class="header-actions"><span class="sync-dot" id="sync-dot"></span><div class="user-badge" id="user-badge" style="display:none" onclick="firebase.auth().signOut()"></div>
+    <div class="header-actions"><div class="user-badge" id="user-badge" style="display:none" onclick="firebase.auth().signOut()"></div>
       <button class="btn btn-secondary btn-sm" onclick="openProjects()">📁 Projekte</button>
       <button class="btn btn-secondary btn-sm" onclick="exportPDF()">📄 PDF Export</button>
     </div>
@@ -788,15 +784,13 @@ _auth.onAuthStateChanged(function(user) {
     document.getElementById('app-root').style.display = 'block';
     if(window.innerWidth<=600){document.getElementById('bottom-nav').style.display='flex';}
     var badge = document.getElementById('user-badge');
-    var em = user.email.length > 22 ? user.email.substring(0,20)+'…' : user.email;
-    var emShort = user.email.length > 16 ? user.email.substring(0,14)+'…' : user.email;
-    badge.innerHTML = '<span class="user-dot"></span>' + em + ' <span style="color:var(--text-muted)">· Abmelden</span>';
+    badge.innerHTML = '🚪 Abmelden';
     badge.style.display = 'flex';
     // Mobile badge
     var mb = document.getElementById('mobile-user-badge');
     var me = document.getElementById('mobile-user-email');
     if(mb){ mb.style.display='flex'; }
-    if(me){ me.textContent = emShort; }
+    if(me){ me.textContent = '🚪'; }
     // Load projects from Firestore
     _db.collection('users').doc(user.uid).collection('projekte').get().then(function(snap) {
       projects = [];
@@ -829,7 +823,7 @@ _auth.onAuthStateChanged(function(user) {
 function setSyncStatus(s) {
   var cls = 'sync-dot'+(s==='idle'?'':' '+s);
   var d=document.getElementById('sync-dot'); if(d) d.className=cls;
-  var dm=document.getElementById('sync-dot-mobile'); if(dm) dm.className=cls;
+
 }
 
 function _saveProjectFS(proj) {
@@ -1535,7 +1529,7 @@ function exportPDF(){
 .login-toggle{text-align:center;margin-top:14px;font-size:13px;color:var(--text-muted);}
 .login-toggle a{color:var(--accent);cursor:pointer;text-decoration:underline;}
 .login-err{background:rgba(224,92,92,.1);border:1px solid var(--danger);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--danger);margin-bottom:12px;display:none;}
-.user-badge{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:12px;color:var(--text-soft);}
+.user-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:12px;color:var(--text-soft);white-space:nowrap;}
 .user-badge:hover{border-color:var(--accent);}
 .user-dot{width:7px;height:7px;background:var(--success);border-radius:50%;flex-shrink:0;}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--text-muted);display:inline-block;transition:background .3s;flex-shrink:0;}
